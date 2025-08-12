@@ -1,8 +1,8 @@
 const asynchandler = (func) =>{
   return async (req , res , next)=>{
     try {
-      const res= await func(req,res,next )
-      return res
+      const response= await func(req,res,next )
+      return response
     } catch (e){
       console.log("error in asynchandler" , e)
       let statusCode =0
