@@ -6,6 +6,7 @@ import jwt from "jsonwebtoken"
 import { upload } from "../utilities/Cloudinary.js";
 import { upload_mul } from "../middlewares/multer.middleware.js";
 import cookie from "cookie-parser";
+import { app } from "../app.js";
 const generateAccessRefershTokens = async function(_id){
   try{
     /** @type {import("../models/user.model.js").User} */
@@ -156,10 +157,113 @@ const getUser =asynchandler(async (req , res )=>{
   const user = await User.findById(req?.user?._id).select("-password -refreshToken")
   res.status(200).json(new ApiResponse(200 , user , "here are your details"))
 })
-const changePassword = asynchandler(async (res , req)=>{
+const changePassword = asynchandler(async (req , res)=>{
+  const {original_password , new_password , confirm_password}  = req.body
+  if (!original_password.trim()||!new_password.trim() ||!confirm_password.trim()) throw new ApiError(401 , "np empty strings")
+  if (new_password!==confirm_password) throw new ApiError(400 , "doest match with the confirm password")
+
+  /** @type {import("../models/user.model.js").User} */
+
+
+  const user= await User.findById(req?.user?._id)
+  if (!user)  throw new ApiError(400 , "user not fetched ")
+  if (!(await user.isPasswordCorrect(original_password)))  throw new ApiError(400 , "password wrong")
+  user.password = new_password
+  user.save({validateBeforeSave:false})
+  res.status(200)
+    .json(new ApiResponse(200 ,{} , "password changed"))
+
+})
+const refreshAccessTokens = asynchandler(async (req,res)=>{
+  /** @type {import("../models/user.model.js").User} */
+
+  const user = await User.findById(req.user._id).select('-password')
+  if (!user) throw new ApiError(401,"user no no no")
+  const token = req.cookies.refreshToken || req.body.refreshToken
+  if (!token) throw new ApiError(401, "noo token")
+  if (token!==user.refreshToken)throw new ApiError(500,"maslaa")
+  const {new_accessToken , new_refreshToken} =await generateAccessRefershTokens(req.user._id)
+
+  const options={
+    http:true,
+    secure:true
+  }
+  res
+    .status(200)
+    .cookie("accessToken" , new_accessToken,options)
+    .cookie("refreshToken" , new_refreshToken,options)
+    .json(new ApiResponse(200,{
+      user:user,
+      new_accessToken:new_accessToken,
+      new_refreshToken:new_refreshToken
+    },"cookies updated"))
+
+
+
+
+})
+const updateUserProfile = asynchandler(async (req,res)=>{
+  const {new_email,new_username} = req.body
+  if (!new_email.trimEnd() || !new_username.trim()) throw new ApiError(401 , "user please enter something")
+
+  /** @type {import("../models/user.model.js").User} */
+
+  const user = await User.findByIdAndUpdate(req.user._id ,{
+
+    $set:{
+      email:new_email,
+      username:new_username
+    }
+  },{new:true})
+
+  res.status(200)
+    .json(new ApiResponse(200 , user , "updated details"))
+
+
+
+
+
+})
+
+const updateAvatar = asynchandler(async (req,res)=>{
+  const local_path = req?.file?.path
+  if (!local_path) throw new ApiError(401 , "path not found")
+  const upload_ = await upload(local_path)
+  if (!upload_.url) throw new ApiError(401 , "not uploaded")
+
+  /** @type {import("../models/user.model.js").User} */
+
+  const user = await User.findByIdAndUpdate(req.user._id , {
+    $set:{
+      avatar:upload_.url
+    }
+  },{new:true})
+  if (!user) throw new ApiError(400,"user not fetched")
+  console.log("user new avatar-->",user.avatar)
+  res.status(200).json(new ApiResponse(200 , user , "avatar updated"))
+
+
+})
+
+const updateCoverImage = asynchandler(async (req,res)=>{
+  const local_path_ = req?.file?.path
+  if (!local_path_) throw new ApiError(401 , "path not found")
+  const upload_cover = await upload(local_path_)
+  if (!upload_cover.url) throw new ApiError(401 , "not uploaded")
+
+  /** @type {import("../models/user.model.js").User} */
+
+  const user = await User.findByIdAndUpdate(req.user._id , {
+    $set:{
+      coverImage:upload_cover.url
+    }
+  },{new:true})
+  if (!user) throw new ApiError(400,"user not fetched")
+  res.status(200).json(new ApiResponse(200 , user , "avatar updated"))
+
 
 })
 
 
 
-export {register_user , login_user , logout , getUser}
+export {register_user , login_user , logout , getUser , changePassword , refreshAccessTokens,updateUserProfile,updateAvatar,updateCoverImage}
