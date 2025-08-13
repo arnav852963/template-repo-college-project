@@ -178,25 +178,26 @@ const refreshAccessTokens = asynchandler(async (req,res)=>{
   /** @type {import("../models/user.model.js").User} */
 
   const user = await User.findById(req.user._id).select('-password')
-  if (!user) throw new ApiError(401,"user no no no")
+  if (!user) throw new ApiError(401, "user no no no")
   const token = req.cookies.refreshToken || req.body.refreshToken
   if (!token) throw new ApiError(401, "noo token")
-  if (token!==user.refreshToken)throw new ApiError(500,"maslaa")
-  const {new_accessToken , new_refreshToken} =await generateAccessRefershTokens(req.user._id)
+  if (token !== user.refreshToken) throw new ApiError(500, "maslaa")
+  const { accessToken, refreshToken } = await generateAccessRefershTokens(req.user._id)
 
-  const options={
-    http:true,
-    secure:true
+  const options = {
+    http: true,
+    secure: true
   }
   res
     .status(200)
-    .cookie("accessToken" , new_accessToken,options)
-    .cookie("refreshToken" , new_refreshToken,options)
-    .json(new ApiResponse(200,{
-      user:user,
-      new_accessToken:new_accessToken,
-      new_refreshToken:new_refreshToken
-    },"cookies updated"))
+    .cookie("accessToken", accessToken, options)
+    .cookie("refreshToken", refreshToken, options)
+    .json(new ApiResponse(200, {
+      user: user,
+      new_accessToken: accessToken,
+      new_refreshToken: refreshToken
+    }, "cookies updated"))
+
 
 
 
