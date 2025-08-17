@@ -1,6 +1,6 @@
 import {Router} from "express"
 import {
-  changePassword,
+  changePassword, deleteUser,
   getUser,
   login_user,
   logout,
@@ -26,6 +26,7 @@ userRoutes.route("/getUser").get(jwt_auth, getUser)
 userRoutes.route("/changePassword").post(jwt_auth ,changePassword)
 userRoutes.route("/refreshAccessToken").post(jwt_auth , refreshAccessTokens)
 userRoutes.route("/updateDetails").post(jwt_auth , updateUserProfile)
-userRoutes.route("/updateAvatar").post(upload_mul.single("avatar"),jwt_auth,updateAvatar)
-userRoutes.route("/updateCoverImage").post(upload_mul.single("coverImage"),jwt_auth,updateCoverImage)
+userRoutes.route("/updateAvatar").patch(upload_mul.single("avatar"),jwt_auth,updateAvatar)
+userRoutes.route("/updateCoverImage").patch(upload_mul.single("coverImage"),jwt_auth,updateCoverImage)
+userRoutes.route("/delete").post(jwt_auth , deleteUser)
 export default userRoutes

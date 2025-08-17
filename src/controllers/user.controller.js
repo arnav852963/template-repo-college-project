@@ -7,6 +7,9 @@ import { upload } from "../utilities/Cloudinary.js";
 import { upload_mul } from "../middlewares/multer.middleware.js";
 import cookie from "cookie-parser";
 import { app } from "../app.js";
+import mongoose from "mongoose";
+import { verifyGoogleToken } from "../utilities/googleauth.js";
+import { on } from "nodemon";
 const generateAccessRefershTokens = async function(_id){
   try{
     /** @type {import("../models/user.model.js").User} */
@@ -40,7 +43,7 @@ const register_user = asynchandler(async (req , res , _)=>{
     ? JSON.parse(isAdmin.toLowerCase())
     : Boolean(isAdmin);
 
-  if (!email.includes("iiitnr.edu.in")) throw new ApiError(400, "enter the administered college email")
+  if (!email.includes("@iiitnr.edu.in")) throw new ApiError(400, "enter the administered college email")
 
   const exists = await User.findOne({
     $or:[{username} , {email}]
@@ -131,6 +134,81 @@ const login_user = asynchandler(async (req , res ,_)=>{
 
 
 
+
+
+})
+const googleAuthLogin = asynchandler(async (req,res)=>{
+  const {idToken} = req.body
+if (!idToken) throw new ApiError(400 , "google never sent token")
+  const payload =await  verifyGoogleToken(idToken)
+  if (!payload) throw new ApiError(400 , "google didnt verify")
+  const {email,name,pic} = payload
+  /** @type {import("../models/user.model.js").User} */
+  const user = await User.findOne({
+    email:email
+  }).select("-password -refreshToken")
+  if (!user) {
+    const created =await  User.create({
+      fullName:name,
+      email:email,
+      avatar:pic,
+      username:email.split("@")[0]
+    })
+    if (!user) throw new ApiError(400 , "user not created")
+    const option = {
+      http:true,
+      secure:true
+    }
+    const {accessToken, refreshToken} = generateAccessRefershTokens(created._id)
+    if (!accessToken || !refreshToken) throw new ApiError(400, "tokens not generated")
+    res
+      .status(200)
+      .cookie("accessToken" , accessToken , option)
+      .cookie("refreshToken" , refreshToken,option)
+      .json(new ApiResponse(200,created , "logged in "))
+
+
+
+
+
+  }
+  const options = {
+    http:true,
+    secure:true
+  }
+  const {accessToken, refreshToken} = generateAccessRefershTokens(user._id)
+  if (!accessToken || !refreshToken) throw new ApiError(400, "tokens not generated")
+  res
+    .status(200)
+    .cookie("accessToken" , accessToken , options)
+    .cookie("refreshToken" , refreshToken,options)
+    .json(new ApiResponse(200,user , "logged in "))
+
+
+
+
+})
+const completeProfile = asynchandler(async (req , res)=>{
+  /** @type {import("../models/user.model.js").User} */
+  const {department , isAdmin} = req.body
+  if (!department || !isAdmin) throw new ApiError(400 , "add details")
+  const local_path = req?.file?.path
+  if (!local_path)throw new ApiError(400 , "multer ki maaa ka bhosda")
+  const onCloud = await upload(local_path)
+  if (!onCloud.url) throw new ApiError(400 , "coverImage not uploaded on cloudinary")
+  const bool_isAdmin = (typeof isAdmin === "string")
+    ? JSON.parse(isAdmin.toLowerCase())
+    : Boolean(isAdmin);
+  const user = await User.findByIdAndUpdate(req.user._id, {
+    $set:{
+      department:department,
+      isAdmin:bool_isAdmin,
+      updateCoverImage:onCloud?.url || ""
+    }
+  } ,{new:true})
+  if (!user) throw new ApiError(400 , "profile not completed")
+  res.status(200)
+    .json(new ApiResponse(200,user , "profile updated"))
 
 
 })
@@ -264,7 +342,60 @@ const updateCoverImage = asynchandler(async (req,res)=>{
 
 
 })
+const deleteUser = asynchandler(async (req,res,next)=>{
+  const user = await User.findByIdAndDelete(req.user._id)
+  if (!user) throw new ApiError(401 , "sorry....user not deleted")
+
+  res.status(200)
+    .clearCookie("accessToken")
+    .clearCookie("refreshToken")
+    .json(new  ApiResponse(200,{},"logged out and deleted"))
+
+})
+const report = asynchandler(async (req,res)=>{
+  const paperReport = await User.aggregate([{
+    $match:{
+      _id: new  mongoose.Types.ObjectId(req.user._id)
+    }
+  },{
+    $lookup:{
+      from:"papers",
+      localField:"_id",
+      foreignField:"owner",
+      as:"details",
+      pipeline:[{
+        $project:{
+          title:1,
+          author:1,
+          publishedDate:1
+        }
+
+      }]
+
+
+    }
+  },{
+    $addFields:{
+      count:{
+        $size:"$details"
+      },
+      all:"$details"
+
+
+    }
+  },{
+    $project:{
+      all:1,
+      count:1
+    }
+  }])
+  if (paperReport.length === 0) throw new ApiError(200 , "report not generated")
+  res.status(200)
+    .json(new ApiResponse(200 , paperReport, "report generated"))
+
+
+})
 
 
 
-export {register_user , login_user , logout , getUser , changePassword , refreshAccessTokens,updateUserProfile,updateAvatar,updateCoverImage}
+export {register_user , login_user , logout , getUser , changePassword , refreshAccessTokens,updateUserProfile,updateAvatar,updateCoverImage,deleteUser}

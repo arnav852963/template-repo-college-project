@@ -16,4 +16,7 @@ app.use(cookie()) //global middleware hai ye.
 
 import userRoutes from "./routes/user.routes.js";
 app.use("/api/v1/users" , userRoutes)
+
+import paperRoute from "./routes/paper.route.js";
+app.use("/api/v1/papers" , paperRoute)
 export {app}
