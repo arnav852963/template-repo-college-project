@@ -47,10 +47,11 @@ const userModel = new Schema({
     type:String,
     require:true
   },
-  history:{
+  history:[{
     type:Schema.Types.ObjectId,
     ref:"paper"
-  }
+  }],
+
 
 } , {timestamps:true})
 
@@ -86,5 +87,8 @@ userModel.methods.generateRefreshToken = function(){
       expiresIn: process.env.REFRESH_TOKEN_EXPIRY
     }
   )
+}
+userModel.methods.generateTempToken = function(){
+
 }
 export const User = mongoose.model("User" , userModel)

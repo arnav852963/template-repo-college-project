@@ -122,7 +122,7 @@ const login_user = asynchandler(async (req , res ,_)=>{
         refreshToken: refreshToken
       }, "logged in as admin"))
   }
-  res
+  return res
     .status(200)
     .cookie("accessToken", accessToken, options)
     .cookie("refreshToken", refreshToken, options)
@@ -161,7 +161,7 @@ if (!idToken) throw new ApiError(400 , "google never sent token")
     }
     const {accessToken, refreshToken} = generateAccessRefershTokens(created._id)
     if (!accessToken || !refreshToken) throw new ApiError(400, "tokens not generated")
-    res
+    return res
       .status(200)
       .cookie("accessToken" , accessToken , option)
       .cookie("refreshToken" , refreshToken,option)
@@ -178,7 +178,7 @@ if (!idToken) throw new ApiError(400 , "google never sent token")
   }
   const {accessToken, refreshToken} = generateAccessRefershTokens(user._id)
   if (!accessToken || !refreshToken) throw new ApiError(400, "tokens not generated")
-  res
+  return res
     .status(200)
     .cookie("accessToken" , accessToken , options)
     .cookie("refreshToken" , refreshToken,options)
@@ -207,7 +207,7 @@ const completeProfile = asynchandler(async (req , res)=>{
     }
   } ,{new:true})
   if (!user) throw new ApiError(400 , "profile not completed")
-  res.status(200)
+ return  res.status(200)
     .json(new ApiResponse(200,user , "profile updated"))
 
 
@@ -223,7 +223,7 @@ const user =await User.findByIdAndUpdate(req?.user?._id , {
   http: true,
     secure: true
   }
-  res.status(200)
+  return res.status(200)
     .clearCookie("accessToken")
     .clearCookie("refreshToken")
     .json(new ApiResponse(200 , user , "logged out successfully"))
@@ -233,7 +233,7 @@ const user =await User.findByIdAndUpdate(req?.user?._id , {
 })
 const getUser =asynchandler(async (req , res )=>{
   const user = await User.findById(req?.user?._id).select("-password -refreshToken")
-  res.status(200).json(new ApiResponse(200 , user , "here are your details"))
+  return res.status(200).json(new ApiResponse(200 , user , "here are your details"))
 })
 const changePassword = asynchandler(async (req , res)=>{
   const {original_password , new_password , confirm_password}  = req.body
@@ -248,7 +248,7 @@ const changePassword = asynchandler(async (req , res)=>{
   if (!(await user.isPasswordCorrect(original_password)))  throw new ApiError(400 , "password wrong")
   user.password = new_password
   user.save({validateBeforeSave:false})
-  res.status(200)
+  return res.status(200)
     .json(new ApiResponse(200 ,{} , "password changed"))
 
 })
@@ -266,7 +266,7 @@ const refreshAccessTokens = asynchandler(async (req,res)=>{
     http: true,
     secure: true
   }
-  res
+  return res
     .status(200)
     .cookie("accessToken", accessToken, options)
     .cookie("refreshToken", refreshToken, options)
@@ -295,7 +295,7 @@ const updateUserProfile = asynchandler(async (req,res)=>{
     }
   },{new:true})
 
-  res.status(200)
+  return res.status(200)
     .json(new ApiResponse(200 , user , "updated details"))
 
 
@@ -319,7 +319,7 @@ const updateAvatar = asynchandler(async (req,res)=>{
   },{new:true})
   if (!user) throw new ApiError(400,"user not fetched")
   console.log("user new avatar-->",user.avatar)
-  res.status(200).json(new ApiResponse(200 , user , "avatar updated"))
+  return res.status(200).json(new ApiResponse(200 , user , "avatar updated"))
 
 
 })
@@ -338,7 +338,7 @@ const updateCoverImage = asynchandler(async (req,res)=>{
     }
   },{new:true})
   if (!user) throw new ApiError(400,"user not fetched")
-  res.status(200).json(new ApiResponse(200 , user , "avatar updated"))
+  return res.status(200).json(new ApiResponse(200 , user , "avatar updated"))
 
 
 })
@@ -390,7 +390,7 @@ const report = asynchandler(async (req,res)=>{
     }
   }])
   if (paperReport.length === 0) throw new ApiError(200 , "report not generated")
-  res.status(200)
+  return res.status(200)
     .json(new ApiResponse(200 , paperReport, "report generated"))
 
 
