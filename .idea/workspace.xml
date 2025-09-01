@@ -5,9 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4fdc6654-a58e-45c7-9dd3-716834baf607" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/models/admindashboard.model.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/models/dashboard.model.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/models/group.model.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/models/star.model.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/controllers/paper.controller.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/controllers/paper.controller.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/controllers/user.controller.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/controllers/user.controller.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/models/user.model.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/user.model.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/routes/paper.route.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/routes/paper.route.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -97,6 +102,10 @@
       <workItem from="1755697924375" duration="873000" />
       <workItem from="1756142563344" duration="1988000" />
       <workItem from="1756271873871" duration="970000" />
+      <workItem from="1756362763799" duration="521000" />
+      <workItem from="1756628843468" duration="6336000" />
+      <workItem from="1756718088370" duration="344000" />
+      <workItem from="1756735422124" duration="1071000" />
     </task>
     <servers />
   </component>

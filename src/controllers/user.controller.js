@@ -362,7 +362,6 @@ const report = asynchandler(async (req,res)=>{
       from:"papers",
       localField:"_id",
       foreignField:"owner",
-      as:"details",
       pipeline:[{
         $project:{
           title:1,
@@ -370,7 +369,9 @@ const report = asynchandler(async (req,res)=>{
           publishedDate:1
         }
 
-      }]
+      }],
+
+      as:"details",
 
 
     }
@@ -378,20 +379,20 @@ const report = asynchandler(async (req,res)=>{
     $addFields:{
       count:{
         $size:"$details"
-      },
-      all:"$details"
+      }
+
 
 
     }
   },{
     $project:{
-      all:1,
+      details:1,
       count:1
     }
   }])
-  if (paperReport.length === 0) throw new ApiError(200 , "report not generated")
+  if (paperReport.length === 0 || paperReport[0].details.length === 0) throw new ApiError(200 , "report not generated")
   return res.status(200)
-    .json(new ApiResponse(200 , paperReport, "report generated"))
+    .json(new ApiResponse(200 , paperReport[0], "report generated"))
 
 
 })
