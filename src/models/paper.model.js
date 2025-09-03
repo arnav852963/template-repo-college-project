@@ -18,6 +18,9 @@ authors:[{
     type:String,
 
   },
+  tag:{
+    type:String
+  },
   publishedDate:{
     type:String,
     required:true

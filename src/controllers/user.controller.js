@@ -17,7 +17,7 @@ const generateAccessRefershTokens = async function(_id){
     const refreshToken = user.generateRefreshToken()
     const accessToken = user.generateAccessToken()
     user.refreshToken = refreshToken
-    user.save({validateBeforeSave:false})
+    await user.save({validateBeforeSave:false})
     return {
       accessToken:accessToken,
       refreshToken:refreshToken

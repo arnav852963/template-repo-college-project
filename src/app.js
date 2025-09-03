@@ -19,4 +19,11 @@ app.use("/api/v1/users" , userRoutes)
 
 import paperRoute from "./routes/paper.route.js";
 app.use("/api/v1/papers" , paperRoute)
+
+import starRoutes from "./routes/star.routes.js";
+app.use("/star" , starRoutes)
+
+import groupRoutes from "./routes/group.routes.js";
+app.use("/groups" , groupRoutes)
+
 export {app}

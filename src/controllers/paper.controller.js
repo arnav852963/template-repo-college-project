@@ -155,6 +155,21 @@ const searchPaper = asynchandler(async (req,res)=>{
 
 
 })
+const getManualUploads = asynchandler(async (req , res)=>{
+  const manualPaper = await User.aggregate([{
+    $match:{
+      _id:new mongoose.Types.ObjectId(req.user._id)
+    }
+  },{
+    $lookup:{
+      from:"papers",
+      localField:"_id",
+      foreignField:"owner"
+    }
+  },{}])
+
+})
+
 
 
 
@@ -164,3 +179,8 @@ export {uploadPaperScholar,uploadPaperManual , getUserPapers , paperById ,delete
 
 
 // downloadPaper (return Cloudinary link or Scholar link).
+// get manualuploads and scholar uploads
+//filter search results
+// admin flags
+// portfolio page
+// about to be published
