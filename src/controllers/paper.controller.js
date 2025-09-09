@@ -376,5 +376,5 @@ export {uploadPaperScholar,uploadPaperManual , getUserPapers , paperById ,delete
 
 // admin flags
 // portfolio page
-// about to be published
+
 //add a video into the website of how to use it

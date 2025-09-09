@@ -18,9 +18,9 @@ authors:[{
     type:String,
 
   },
-  tag:{
+  tag:[{
     type:String
-  },
+  }],
   publishedDate:{
     type:String,
     required:true

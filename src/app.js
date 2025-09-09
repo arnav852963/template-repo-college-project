@@ -25,5 +25,7 @@ app.use("/star" , starRoutes)
 
 import groupRoutes from "./routes/group.routes.js";
 app.use("/groups" , groupRoutes)
+import dashboardRoutes from "./routes/dashboard.routes.js";
+app.use("/dashboard" , dashboardRoutes)
 
 export {app}
