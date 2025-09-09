@@ -15,7 +15,7 @@ const jwt_auth =asynchandler( async (req , res,next )=>{
     req.user = user
     next()
   } catch (e){
-    throw new ApiError(401 , "invalid authmmmmm")
+    throw new ApiError(401 , "Please Login")
   }
 
 })

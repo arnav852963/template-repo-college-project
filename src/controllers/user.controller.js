@@ -143,6 +143,8 @@ if (!idToken) throw new ApiError(400 , "google never sent token")
   const payload =await  verifyGoogleToken(idToken)
   if (!payload) throw new ApiError(400 , "google didnt verify")
   const {email,name,pic} = payload
+
+
   /** @type {import("../models/user.model.js").User} */
   const user = await User.findOne({
     email:email
@@ -353,6 +355,31 @@ const deleteUser = asynchandler(async (req,res,next)=>{
 
 })
 const report = asynchandler(async (req,res)=>{
+  const {title = false ,authors =false, tag =false , publishedBy =false, publishedDate=false ,  citedBy=false} = req.body
+  const projectObject ={}
+  if ((title === false || title === undefined) && (authors === false || authors === undefined) && (tag === false || tag === undefined) && (publishedBy === false || publishedBy === undefined) && (publishedDate === false || publishedDate === undefined) && (citedBy === false || citedBy === undefined)
+  ) throw  new ApiError(400 , "naah")
+  if (title === true) {
+    projectObject.title = 1;
+  }
+  if (authors === true) {
+    projectObject.authors = 1;
+  }
+  if (tag === true) {
+    projectObject.tag = 1;
+  }
+  if (publishedBy === true) {
+    projectObject.publishedBy = 1;
+  }
+  if (publishedDate === true) {
+    projectObject.publishedDate = 1;
+  }
+  if (citedBy === true) {
+    projectObject.citedBy = 1;
+  }
+  projectObject.link =1
+  projectObject.manualUpload =1
+
   const paperReport = await User.aggregate([{
     $match:{
       _id: new  mongoose.Types.ObjectId(req.user._id)
@@ -363,11 +390,36 @@ const report = asynchandler(async (req,res)=>{
       localField:"_id",
       foreignField:"owner",
       pipeline:[{
-        $project:{
-          title:1,
-          author:1,
-          publishedDate:1
+        $addFields:{
+          link:{
+            $cond:{
+              if: {
+                $and: [
+                  { $ne: ["$link", null] },
+                  { $ne: ["$link", ""] }
+                ]
+              },
+              then:"$link",
+              else:"$$REMOVE"
+            }
+
+          },
+          manualUpload:{
+            $cond:{
+              if: {
+                $and: [
+                  { $ne: ["$manualUpload", null] },
+                  { $ne: ["$manualUpload", ""] }
+                ]
+              },
+              then:"$manualUpload",
+              else:"$$REMOVE"
+            }
+
+          }
         }
+      },{
+        $project:projectObject
 
       }],
 
@@ -390,7 +442,7 @@ const report = asynchandler(async (req,res)=>{
       count:1
     }
   }])
-  if (paperReport.length === 0 || paperReport[0].details.length === 0) throw new ApiError(200 , "report not generated")
+  if (paperReport.length === 0 || paperReport[0].details.length === 0) throw new ApiError(400 , "report not generated")
   return res.status(200)
     .json(new ApiResponse(200 , paperReport[0], "report generated"))
 
@@ -399,4 +451,4 @@ const report = asynchandler(async (req,res)=>{
 
 
 
-export {register_user , login_user , logout , getUser , changePassword , refreshAccessTokens,updateUserProfile,updateAvatar,updateCoverImage,deleteUser}
+export {register_user , login_user , logout , getUser , changePassword , refreshAccessTokens,updateUserProfile,updateAvatar,updateCoverImage,deleteUser , report}

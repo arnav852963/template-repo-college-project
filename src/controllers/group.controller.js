@@ -124,4 +124,3 @@ const getAllGroups = asynchandler(async (req,res)=>{
   return res.status(200)
     .json(new ApiResponse(200 , all[0] , "here is your group collection"))
 })
-export {getAllGroups , getGroupById , createGroup,deleteGroup,addPaperToGroup,removePaper,updateGroup}

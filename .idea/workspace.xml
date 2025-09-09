@@ -6,6 +6,11 @@
   <component name="ChangeListManager">
     <list default="true" id="4fdc6654-a58e-45c7-9dd3-716834baf607" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/controllers/group.controller.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/controllers/group.controller.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/controllers/paper.controller.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/controllers/paper.controller.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/controllers/user.controller.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/controllers/user.controller.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/middlewares/auth.middleware.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/middlewares/auth.middleware.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/models/paper.model.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/paper.model.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -110,6 +115,13 @@
       <workItem from="1756909924458" duration="4325000" />
       <workItem from="1756969336232" duration="1449000" />
       <workItem from="1756971226912" duration="3129000" />
+      <workItem from="1756983005836" duration="72000" />
+      <workItem from="1757172507024" duration="3153000" />
+      <workItem from="1757253323104" duration="823000" />
+      <workItem from="1757259871646" duration="5000" />
+      <workItem from="1757262790382" duration="1840000" />
+      <workItem from="1757354131823" duration="5415000" />
+      <workItem from="1757400329914" duration="11218000" />
     </task>
     <servers />
   </component>
@@ -134,12 +146,12 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/src/controllers/user.controller.js</url>
-          <line>228</line>
+          <line>230</line>
           <option name="timeStamp" value="3" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/src/controllers/paper.controller.js</url>
-          <line>82</line>
+          <line>84</line>
           <option name="timeStamp" value="4" />
         </line-breakpoint>
       </breakpoints>

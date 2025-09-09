@@ -12,7 +12,7 @@ authors:[{
 }],
   link:{
     type:String,
-    required:true
+
   },
   manualUpload:{
     type:String,
@@ -37,14 +37,20 @@ authors:[{
     type:String,
 
   },
-  source:{
-    type:String,
-    default:"manual"
+  isPublished:{
+    type:Boolean,
+    default:true
+
   },
   owner:{
     type:Schema.Types.ObjectId,
     ref:"User",
     required:true
+  },
+  isManual:{
+    type:Boolean,
+    required:true,
+    default:false
   }
 
 },{timestamps:true})

@@ -7,6 +7,7 @@ import { upload } from "../utilities/Cloudinary.js";
 import { User } from "../models/user.model.js";
 import mongoose, { isValidObjectId } from "mongoose";
 import { ObjectId } from "mongodb";
+import { auth } from "google-auth-library";
 const uploadPaperScholar = asynchandler(async (req,res)=>{
   const {query} = req.body
   if (!query.trim()) throw ApiError(400 , "enter some query")
@@ -45,7 +46,8 @@ const uploadPaperManual = asynchandler(async (req , res)=>{
     manualUpload:upload_pdf.url || "",
     publishedDate:publishedDate,
     owner:req?.user?._id,
-    publishedBy:publishedBy
+    publishedBy:publishedBy,
+    isManual:true
   })
 if (!paper) throw new ApiError(400 , "cant create paper")
   return res.status(200)
@@ -164,23 +166,142 @@ const getManualUploads = asynchandler(async (req , res)=>{
     $lookup:{
       from:"papers",
       localField:"_id",
-      foreignField:"owner"
+      foreignField:"owner",
+      pipeline:[{
+        $match:{
+          isManual:true
+        }
+      },{
+        $project:{
+          title:1,
+          authors:1,
+          manualUpload:1,
+          tag:1,
+          publishedDate:1,
+          publishedBy:1,
+          citedBy:1,
+          pdfUrl:1,
+
+      }
+      }],
+      as:"manualUploads"
     }
-  },{}])
+  },{
+    $project:{
+      manualUploads:1
+    }
+  }])
+
+})
+
+const getScholarUploads = asynchandler(async (req , res)=>{
+  const scholarPaper = await User.aggregate([{
+    $match:{
+      _id:new mongoose.Types.ObjectId(req.user._id)
+    }
+  },{
+    $lookup:{
+      from:"papers",
+      localField:"_id",
+      foreignField:"owner",
+      pipeline:[{
+        $match:{
+          isManual:false
+        }
+      },{
+        $project:{
+          title:1,
+          authors:1,
+          link:1,
+          tag:1,
+          publishedDate:1,
+          publishedBy:1,
+          citedBy:1,
+          pdfUrl:1,
+
+        }
+      }],
+      as:"scholarUploads"
+    }
+  },{
+    $project:{
+      scholarUploads:1
+    }
+  }])
+
+})
+
+const filter_search = asynchandler(async (req,res)=>{
+  const {title ="", authors="" , tag=""  , isManual} = req.body
+  if (title.trim() === ""&& authors.trim() === ""&& tag.trim() === ""&& isManual === undefined) throw new ApiError(400 , "naah")
+  const arr = []
+  if (!(title.trim()==="")) arr.push({
+    title:{
+      $regex:title,
+      $options:'i'
+    }
+  })
+  if (!(authors.trim()==="")) arr.push({
+    authors:{
+      $regex:authors,
+      $options:'i'
+    }
+  })
+  if (!(tag.trim()==="")) arr.push({
+    tag:{
+      $regex:tag,
+      $options:'i'
+    }
+  })
+  if (!(isManual===undefined)) arr.push({isManual:isManual})
+
+  const search = await User.aggregate([{
+    $match:{
+      _id:new mongoose.Types.ObjectId(req.user._id)
+    }
+  },{
+    $lookup:{
+      from:"papers",
+      localField:"_id",
+      foreignField:"owner",
+      pipeline:[{
+        $match:{
+          $and:arr
+        }
+      },{$project:{
+        link:1,
+          manualUpload:1
+
+
+        }}],
+      as:"searchResults"
+    }
+  },{
+    $project:{
+      searchResults:1
+    }
+  }])
+  if (search.length === 0 || search[0].searchResults.length === 0) throw new ApiError(400 , "no searches")
+  return res.status(200)
+    .json(new ApiResponse(200 , search[0] , "here are your search results"))
+
 
 })
 
 
 
 
-export {uploadPaperScholar,uploadPaperManual , getUserPapers , paperById ,deletePaper , searchPaper}
+
+
+export {uploadPaperScholar,uploadPaperManual , getUserPapers , paperById ,deletePaper , searchPaper , filter_search}
 
 
 
 
 // downloadPaper (return Cloudinary link or Scholar link).
-// get manualuploads and scholar uploads
+
 //filter search results
 // admin flags
 // portfolio page
 // about to be published
+//add a video into the website of how to use it
