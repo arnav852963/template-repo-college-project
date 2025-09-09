@@ -21,7 +21,8 @@ const uploadPaperScholar = asynchandler(async (req,res)=>{
     publishedDate:response.year,
     owner:req?.user?._id,
     pdfUrl:response.pdf_url,
-    citedBy:response.cited_by
+    citedBy:response.cited_by,
+
 
 
   })
@@ -48,6 +49,7 @@ const uploadPaperManual = asynchandler(async (req , res)=>{
     owner:req?.user?._id,
     publishedBy:publishedBy,
     isManual:true
+
   })
 if (!paper) throw new ApiError(400 , "cant create paper")
   return res.status(200)
@@ -288,6 +290,77 @@ const filter_search = asynchandler(async (req,res)=>{
 
 })
 
+const getPublishedPapers  = asynchandler(async (req , res) =>{
+  const published_papers = await User.aggregate([{
+    $match:{
+      _id:new mongoose.Types.ObjectId(req?.user?._id)
+    }
+  },{
+    $lookup:{
+      from:"papers",
+      localField:"_id",
+      foreignField:"owner",
+      pipeline:[{
+        $match:{
+          isPublished:true
+        }
+      },{
+        $project:{
+          title:1,
+          authors:1,
+          link:1,
+          manualUpload:1
+        }
+      }],
+      as:"publishedPapers"
+    }
+  },{
+    $project:{
+      publishedPapers:1
+    }
+  }])
+  if (published_papers.length === 0 || published_papers[0].publishedPapers.length ===0) throw ApiError(400 , "published papers cant be fetched")
+  return res.status(200)
+    .json(new ApiResponse(200 , published_papers[0] , "here are your published papers"))
+
+})
+
+const getAboutToBePublishedPapers  = asynchandler(async (req , res) =>{
+  const about_to_be_published_papers = await User.aggregate([{
+    $match:{
+      _id:new mongoose.Types.ObjectId(req?.user?._id)
+    }
+  },{
+    $lookup:{
+      from:"papers",
+      localField:"_id",
+      foreignField:"owner",
+      pipeline:[{
+        $match:{
+          isPublished:false
+        }
+      },{
+        $project:{
+          title:1,
+          authors:1,
+          link:1,
+          manualUpload:1
+        }
+      }],
+      as:"aboutToBePublishedPapers"
+    }
+  },{
+    $project:{
+      aboutToBePublishedPapers:1
+    }
+  }])
+  if (about_to_be_published_papers.length === 0 || about_to_be_published_papers[0].aboutToBePublishedPapers.length ===0) throw ApiError(400 , "published papers cant be fetched")
+  return res.status(200)
+    .json(new ApiResponse(200 , about_to_be_published_papers[0] , "here are your about to be published papers"))
+
+})
+
+
 
 
 
@@ -300,7 +373,7 @@ export {uploadPaperScholar,uploadPaperManual , getUserPapers , paperById ,delete
 
 // downloadPaper (return Cloudinary link or Scholar link).
 
-//filter search results
+
 // admin flags
 // portfolio page
 // about to be published
