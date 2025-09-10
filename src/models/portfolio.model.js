@@ -1,0 +1,54 @@
+import mongoose from "mongoose";
+const portfolioModel = new mongoose.Schema({
+  owner:{
+    type:mongoose.Schema.Types.ObjectId,
+    ref:"User",
+    required:true,
+    unique:true
+  },
+  description:{
+    type:String,
+    required:true,
+    trim:true
+  },
+  profileLink:{
+    type:String,
+    required:true,
+    trim:true
+  },
+  phoneNo:{
+    type:String,
+    required:true,
+    trim:true
+  },
+  socialLinks:[{
+    type:String,
+    trim:true
+  }],
+  name:{
+    type:String,
+    trim:true
+  },
+  avatar:{
+    type:String,
+    trim:true
+  },
+  department:{
+    type:String,
+    trim:true
+  },
+  researchInterests:[{
+    type:String,
+    trim:true
+  }],
+  designation:{
+    type:String,
+    trim:true
+  },
+  papers:[{
+    type:mongoose.Schema.Types.ObjectId,
+    ref:"Paper"
+  }]
+},{timestamps:true})
+
+export const Portfolio = mongoose.model("Portfolio" , portfolioModel)

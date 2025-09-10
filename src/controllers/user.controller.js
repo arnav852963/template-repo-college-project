@@ -9,7 +9,7 @@ import cookie from "cookie-parser";
 import { app } from "../app.js";
 import mongoose from "mongoose";
 import { verifyGoogleToken } from "../utilities/googleauth.js";
-import { on } from "nodemon";
+
 const generateAccessRefershTokens = async function(_id){
   try{
     /** @type {import("../models/user.model.js").User} */
@@ -32,8 +32,8 @@ const generateAccessRefershTokens = async function(_id){
 }
 
 const register_user = asynchandler(async (req , res , _)=>{
-  const {fullName , username, password , email, department,isAdmin}=req.body
-  if ([fullName , username, password , email, department,isAdmin].some((item)=>{
+  const {fullName , username, password , email, department,isAdmin , researchInterest ,designation}=req.body
+  if ([fullName , username, password , email, department,isAdmin,researchInterest ,designation].some((item)=>{
     if (item) {
       if (!item.trim()) return true
     }
@@ -66,7 +66,11 @@ const register_user = asynchandler(async (req , res , _)=>{
     email:email,
     department:department,
     isAdmin:bool_isAdmin,
-    password:password
+    password:password,
+    researchInterests:{
+      $push:researchInterest.trim().split(",").map((item)=>item.trim())
+    },
+    designation:designation
   })
   const response = await User.findById(user._id).select("-password -refreshToken")
 if (bool_isAdmin) {
@@ -94,7 +98,9 @@ if (bool_isAdmin) {
 const login_user = asynchandler(async (req , res ,_)=>{
   const {email , password} = req.body
   if (!email.trim() || !password) throw new ApiError(401 , "enter full details")
+
   /** @type {import("../models/user.model.js").User} */
+
   const user = await User.findOne({
     email
   });
@@ -192,8 +198,8 @@ if (!idToken) throw new ApiError(400 , "google never sent token")
 })
 const completeProfile = asynchandler(async (req , res)=>{
   /** @type {import("../models/user.model.js").User} */
-  const {department , isAdmin} = req.body
-  if (!department || !isAdmin) throw new ApiError(400 , "add details")
+  const {department , isAdmin , researchInterest ,designation} = req.body
+  if (!department || !department.trim()|| !isAdmin || !isAdmin.trim() || !researchInterest|| !researchInterest.trim()) throw new ApiError(400 , "add details")
   const local_path = req?.file?.path
   if (!local_path)throw new ApiError(400 , "multer ki maaa ka bhosda")
   const onCloud = await upload(local_path)
@@ -205,7 +211,11 @@ const completeProfile = asynchandler(async (req , res)=>{
     $set:{
       department:department,
       isAdmin:bool_isAdmin,
-      updateCoverImage:onCloud?.url || ""
+      updateCoverImage:onCloud?.url || "",
+      researchInterests:{
+        $push:researchInterest.trim().split(",").map((item)=>item.trim())
+      },
+      designation:designation
     }
   } ,{new:true})
   if (!user) throw new ApiError(400 , "profile not completed")

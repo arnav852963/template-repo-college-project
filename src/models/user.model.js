@@ -32,6 +32,10 @@ const userModel = new Schema({
     type:String,
     trim:true
   },
+  researchInterests:[{
+    type:String,
+    trim:true
+  }],
   isAdmin:{
     type:Boolean,
     require:true
@@ -51,6 +55,10 @@ const userModel = new Schema({
     type:Schema.Types.ObjectId,
     ref:"paper"
   }],
+  designation:{
+    type:String,
+    trim:true
+  }
 
 
 } , {timestamps:true})

@@ -33,13 +33,13 @@ const uploadPaperScholar = asynchandler(async (req,res)=>{
 
 })
 const uploadPaperManual = asynchandler(async (req , res)=>{
-  const {title , author , publishedDate , publishedBy} = req.body;
-  if (!title.trim() || !author.trim() || publishedDate.trim() ||  !publishedBy.trim()) throw new ApiError(400 , "enter details properly")
+  const {title , author , publishedDate , publishedBy , tag} = req.body;
+  if (!title.trim() || !title || !author.trim()||!author || publishedDate.trim()||!publishedDate ||!publishedBy||  !publishedBy.trim()||!tag||!tag.trim()) throw new ApiError(400 , "enter details properly")
 
   const local_pdf = req.file.path;
-  if (!local_pdf) throw new ApiError(400 , "multer ne gendd leli")
+  if (!local_pdf) throw new ApiError(400 , "multer messed")
   const upload_pdf = await upload(local_pdf);
-  if (!upload_pdf.url) throw new ApiError(400 , "cloudinary choduu")
+  if (!upload_pdf.url) throw new ApiError(400 , "cloudinary messed")
 
   const paper = await Paper.create({
     title:title,
@@ -48,7 +48,10 @@ const uploadPaperManual = asynchandler(async (req , res)=>{
     publishedDate:publishedDate,
     owner:req?.user?._id,
     publishedBy:publishedBy,
-    isManual:true
+    isManual:true,
+    tag:{
+      $push:tag.trim()
+    }
 
   })
 if (!paper) throw new ApiError(400 , "cant create paper")
@@ -360,13 +363,37 @@ const getAboutToBePublishedPapers  = asynchandler(async (req , res) =>{
 
 })
 
+const addTag = asynchandler(async (req , res)=> {
+  const { paperId } = req.params
+  const { tag } = req.body
+  if (!paperId.trim() || !isValidObjectId(paperId)) throw new ApiError(400, "naah")
+  if (!tag.trim()) throw new ApiError(400, "enter some tag")
+  const paper = await Paper.findById(paperId)
+  if (!paper) throw new ApiError(400, "paper not found")
+  if (paper.owner.toString() !== req.user._id.toString()) throw new ApiError(403, "not your paper")
+  if (paper.tag.includes(tag.trim())) throw new ApiError(400, "tag already exists")
+  paper.tag.push(tag.trim())
+  const updated = await paper.save()
+  if (!updated) throw new ApiError(400, "tag not added")
+  return res.status(200)
+    .json(new ApiResponse(200, updated, "tag added"))
+})
 
+export {
+  uploadPaperScholar,
+  uploadPaperManual,
+  getUserPapers,
+  paperById,
+  deletePaper,
+  searchPaper,
+  filter_search,
+  getManualUploads,
+  getScholarUploads,
+  getPublishedPapers,
+  getAboutToBePublishedPapers,
+  addTag
+};
 
-
-
-
-
-export {uploadPaperScholar,uploadPaperManual , getUserPapers , paperById ,deletePaper , searchPaper , filter_search}
 
 
 
