@@ -5,13 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4fdc6654-a58e-45c7-9dd3-716834baf607" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/models/portfolio.model.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/errorsfaced.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.env" beforeDir="false" afterPath="$PROJECT_DIR$/.env" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/controllers/group.controller.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/controllers/group.controller.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/controllers/paper.controller.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/controllers/paper.controller.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/controllers/portfolio.controller.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/controllers/portfolio.controller.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/controllers/user.controller.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/controllers/user.controller.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/models/user.model.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/user.model.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/middlewares/auth.middleware.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/middlewares/auth.middleware.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/routes/user.routes.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/routes/user.routes.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -125,7 +125,9 @@
       <workItem from="1757354131823" duration="5415000" />
       <workItem from="1757400329914" duration="20857000" />
       <workItem from="1757451740536" duration="2330000" />
-      <workItem from="1757483921704" duration="7650000" />
+      <workItem from="1757483921704" duration="8504000" />
+      <workItem from="1757520323141" duration="9518000" />
+      <workItem from="1757575921155" duration="8420000" />
     </task>
     <servers />
   </component>
@@ -145,17 +147,17 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/src/controllers/user.controller.js</url>
-          <line>148</line>
+          <line>152</line>
           <option name="timeStamp" value="2" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/src/controllers/user.controller.js</url>
-          <line>240</line>
+          <line>244</line>
           <option name="timeStamp" value="3" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/src/controllers/paper.controller.js</url>
-          <line>89</line>
+          <line>90</line>
           <option name="timeStamp" value="4" />
         </line-breakpoint>
       </breakpoints>

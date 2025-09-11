@@ -58,18 +58,22 @@ const register_user = asynchandler(async (req , res , _)=>{
   if ( !upload_avatar.url) throw new ApiError(401 , "avatar cloudinary error")
   const upload_coverImage =await  upload(local_path_coverImage)
   if ( !upload_coverImage.url) throw new ApiError(401 , "coverImage cloudinary error")
+  const array =[]
+  researchInterest.split(",").forEach((item)=>{
+    if (item.trim()) array.push(item.trim())
+  })
+  if (array.length===0) throw new ApiError(400 , "add some research interest")
+
   const user =await User.create({
     username:username,
     fullName:fullName,
-    avatar:upload_avatar.url || "lund na kuch",
-    coverImage:upload_coverImage.url||"lund na kuch",
+    avatar:upload_avatar.url || "",
+    coverImage:upload_coverImage.url||"",
     email:email,
     department:department,
     isAdmin:bool_isAdmin,
     password:password,
-    researchInterests:{
-      $push:researchInterest.trim().split(",").map((item)=>item.trim())
-    },
+    researchInterests:array,
     designation:designation
   })
   const response = await User.findById(user._id).select("-password -refreshToken")
@@ -296,6 +300,7 @@ const refreshAccessTokens = asynchandler(async (req,res)=>{
 const updateUserProfile = asynchandler(async (req,res)=>{
   const {new_email,new_username} = req.body
   if (!new_email.trimEnd() || !new_username.trim()) throw new ApiError(401 , "user please enter something")
+  if (!new_email.includes("@iiitnr.edu.in")) throw new ApiError(400, "enter the administered college email")
 
   /** @type {import("../models/user.model.js").User} */
 
@@ -461,4 +466,4 @@ const report = asynchandler(async (req,res)=>{
 
 
 
-export {register_user , login_user , logout , getUser , changePassword , refreshAccessTokens,updateUserProfile,updateAvatar,updateCoverImage,deleteUser , report}
+export {register_user , login_user , logout , getUser , changePassword , refreshAccessTokens,updateUserProfile,updateAvatar,updateCoverImage,deleteUser , report , googleAuthLogin , completeProfile}

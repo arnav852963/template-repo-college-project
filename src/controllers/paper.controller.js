@@ -14,14 +14,14 @@ const uploadPaperScholar = asynchandler(async (req,res)=>{
   const response = await searchScholarAPI(query)
   if (!response || response.length ===0) throw new ApiError(400 , "scholar search not working")
   const addPaper = await Paper.create({
-    title:response.title,
-    authors:response.authors.split(",").map(a => a.trim()),
-    publishedBy:response.publishedBy,
-    link:response.link,
-    publishedDate:response.year,
+    title:response[1].title,
+    authors:response[1].authors.split(",").map(a => a.trim()),
+    publishedBy:response[1].publishedBy,
+    link:response[1].link,
+    publishedDate:response[1].year,
     owner:req?.user?._id,
-    pdfUrl:response.pdf_url,
-    citedBy:response.cited_by,
+    pdfUrl:response[1].pdf_url,
+    citedBy:response[1].cited_by,
 
 
 
@@ -33,25 +33,37 @@ const uploadPaperScholar = asynchandler(async (req,res)=>{
 
 })
 const uploadPaperManual = asynchandler(async (req , res)=>{
+
+
+
   const {title , author , publishedDate , publishedBy , tag} = req.body;
-  if (!title.trim() || !title || !author.trim()||!author || publishedDate.trim()||!publishedDate ||!publishedBy||  !publishedBy.trim()||!tag||!tag.trim()) throw new ApiError(400 , "enter details properly")
+  if (!title || !author || !publishedDate || !publishedBy || !tag)  throw new ApiError(400 , "enter details properly")
 
   const local_pdf = req.file.path;
   if (!local_pdf) throw new ApiError(400 , "multer messed")
   const upload_pdf = await upload(local_pdf);
   if (!upload_pdf.url) throw new ApiError(400 , "cloudinary messed")
+  const tags = []
+  tag.split(",").forEach(t=>{
+    if (t.trim()!=="") tags.push(t.trim())
+  })
+  if (tags.length === 0) throw new ApiError(400 , "enter some tags")
+  const authors =[]
+  author.split(",").forEach(a=>{
+    if (a.trim()!=="") authors.push(a.trim())
+  })
+  if (authors.length === 0) throw new ApiError(400 , "enter some authors")
 
   const paper = await Paper.create({
     title:title,
-    author:author,
+    authors:authors,
     manualUpload:upload_pdf.url || "",
     publishedDate:publishedDate,
     owner:req?.user?._id,
     publishedBy:publishedBy,
     isManual:true,
-    tag:{
-      $push:tag.trim()
-    }
+    tag:tags,
+    isPublished:false
 
   })
 if (!paper) throw new ApiError(400 , "cant create paper")
@@ -60,24 +72,13 @@ if (!paper) throw new ApiError(400 , "cant create paper")
 })
 
 const getUserPapers = asynchandler(async (req,res)=>{
-  const papers = await  User.aggregate([{
-    $match: new mongoose.Types.ObjectId(req?.user?._id)
-  },{
-    $lookup:{
-      from:"papers",
-      localField:"_id",
-      foreignField:"owner",
-      as:"collection"
-    }
-  },{
-    $project:{
-      collection:1
-    }
-  }])
-  if (papers.length === 0 || papers.collection.byteLength ===0)  throw new ApiError(400 , "cant get papers")
+
+  const papers = await Paper.find({owner:req?.user?._id})
+  if (!papers || papers.length ===0) throw new ApiError(400 , "cant get papers")
+
 
   return res.status(200)
-    .json(new ApiResponse(200,papers[0],"here is your collection"))
+    .json(new ApiResponse(200,papers,"here is your collection"))
 
 })
 
@@ -107,10 +108,10 @@ const deletePaper = asynchandler(async (req,res)=>{
 })
 const searchPaper = asynchandler(async (req,res)=>{
   const { page, query, sortBy, sortType, userId } = req.query
-  if(!query ||!sortBy||!sortType||!userId||!isValidObjectId(userId)) throw new ApiError(400 , "nah")
+  if(!query ||!sortBy||!userId||!isValidObjectId(userId) ||!page) throw new ApiError(400 , "nah")
 
   const limit = 10
-  const skip = (page-1)*limit
+  const skip = (parseInt(page) -1)*limit
   const searchResult = await User.aggregate([{
     $match:{
       _id: new mongoose.Types.ObjectId(userId)

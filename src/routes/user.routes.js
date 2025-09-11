@@ -1,7 +1,7 @@
 import {Router} from "express"
 import {
-  changePassword, deleteUser,
-  getUser,
+  changePassword, completeProfile, deleteUser,
+  getUser, googleAuthLogin,
   login_user,
   logout,
   refreshAccessTokens,
@@ -25,6 +25,8 @@ userRoutes.route("/register").post(upload_mul.fields([{
 userRoutes.route("/login").post(login_user)
 userRoutes.route("/logout").post(jwt_auth , logout)
 userRoutes.route("/report").post(jwt_auth,report)
+userRoutes.route("/googleLogin").post(googleAuthLogin)
+userRoutes.route("/completeProfile").post(jwt_auth,completeProfile)
 //get
 userRoutes.route("/getUser").get(jwt_auth, getUser)
 //patch
@@ -35,4 +37,6 @@ userRoutes.route("/updateAvatar").patch(upload_mul.single("avatar"),jwt_auth,upd
 userRoutes.route("/updateCoverImage").patch(upload_mul.single("coverImage"),jwt_auth,updateCoverImage)
 //del
 userRoutes.route("/delete").delete(jwt_auth , deleteUser)
+
+//every controller tested except report , googleLogin ,completeProfile
 export default userRoutes

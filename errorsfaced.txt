@@ -1,0 +1,4 @@
+1.uploadManually was not working ....error at line 44...as in postman i was putting space before writing the key author.....|
+so ....write key carefully and donot put space before writing the keys
+
+-x-x-x-x-x-x-x-x-x--x-x-x-x-x-x-x-x--x-x-x-x-x-x-x--x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-xx-

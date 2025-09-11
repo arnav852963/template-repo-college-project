@@ -21,11 +21,11 @@ paperRoute.use(jwt_auth);
 
 // Research paper routes
 paperRoute.route("/addResearchPaper").post(uploadPaperScholar);
-paperRoute.route("/addResearchPaperManual").post(upload_mul.single("paper"), uploadPaperManual);
+paperRoute.route("/addResearchPaperManual").post(upload_mul.single("paper"), uploadPaperManual); //tested
 
 // Fetching routes
-paperRoute.route("/getUserPapers").get(getUserPapers);
-paperRoute.route("/paperById/:paperId").get(paperById);
+paperRoute.route("/getUserPapers").get(getUserPapers); //tested
+paperRoute.route("/paperById/:paperId").get(paperById); //tested
 paperRoute.route("/deletePaper/:paperId").delete(deletePaper);
 paperRoute.route("/searchPaper").get(searchPaper);
 
