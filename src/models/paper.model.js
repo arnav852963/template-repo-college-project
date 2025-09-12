@@ -12,10 +12,12 @@ authors:[{
 }],
   link:{
     type:String,
+    unique:true
 
   },
   manualUpload:{
     type:String,
+    unique:true
 
   },
   tag:[{
@@ -33,10 +35,7 @@ authors:[{
     type:Number,
 
   },
-  pdfUrl:{
-    type:String,
 
-  },
   isPublished:{
     type:Boolean,
     default:true

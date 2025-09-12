@@ -2,3 +2,10 @@
 so ....write key carefully and donot put space before writing the keys
 
 -x-x-x-x-x-x-x-x-x--x-x-x-x-x-x-x-x--x-x-x-x-x-x-x--x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-xx-
+
+https://accounts.google.com/o/oauth2/v2/auth?
+ client_id=1096730764737-ma3q511kei4goe7kq14on8bk9pj5trtl.apps.googleusercontent.com&
+ redirect_uri=http:https://fra.cloud.appwrite.io/v1/account/sessions/oauth2/callback/google/68c40ec60001cbb14645
+ response_type=code&
+ scope=openid%20email%20profile&
+ access_type=offline

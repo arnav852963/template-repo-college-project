@@ -15,7 +15,7 @@ const userModel = new Schema({
   },
   password:{
     type:String,
-    require:[true , "password is required"]
+    // require:[true , "password is required"]
   },
   fullName:{
     type:String,
@@ -38,18 +38,18 @@ const userModel = new Schema({
   }],
   isAdmin:{
     type:Boolean,
-    require:true
+    // require:true
   },
   refreshToken:{
     type:String
   },
   avatar:{
     type:String,
-    require:true
+    // require:true
   },
   coverImage:{
     type:String,
-    require:true
+    // require:true
   },
   history:[{
     type:Schema.Types.ObjectId,

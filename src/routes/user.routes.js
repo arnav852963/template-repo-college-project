@@ -26,7 +26,15 @@ userRoutes.route("/login").post(login_user)
 userRoutes.route("/logout").post(jwt_auth , logout)
 userRoutes.route("/report").post(jwt_auth,report)
 userRoutes.route("/googleLogin").post(googleAuthLogin)
-userRoutes.route("/completeProfile").post(jwt_auth,completeProfile)
+userRoutes.route("/completeProfile").post(jwt_auth,upload_mul.fields([{
+  name:"avatar",
+  maxCount:1
+
+},{
+  name:"coverImage",
+  maxCount: 1
+
+}]),completeProfile)
 //get
 userRoutes.route("/getUser").get(jwt_auth, getUser)
 //patch

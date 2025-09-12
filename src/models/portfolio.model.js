@@ -19,7 +19,8 @@ const portfolioModel = new mongoose.Schema({
   phoneNo:{
     type:String,
     required:true,
-    trim:true
+    trim:true,
+    unique:true
   },
   socialLinks:[{
     type:String,

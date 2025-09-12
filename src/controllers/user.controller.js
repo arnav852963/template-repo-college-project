@@ -16,6 +16,8 @@ const generateAccessRefershTokens = async function(_id){
     const user = await User.findById(_id)
     const refreshToken = user.generateRefreshToken()
     const accessToken = user.generateAccessToken()
+      // console.log("accessToken " , accessToken ,"refreshToken-->", refreshToken)
+    if (!accessToken || !refreshToken) throw new ApiError(400, "tokens not generated in the method")
     user.refreshToken = refreshToken
     await user.save({validateBeforeSave:false})
     return {
@@ -32,6 +34,7 @@ const generateAccessRefershTokens = async function(_id){
 }
 
 const register_user = asynchandler(async (req , res , _)=>{
+  console.log("req.body-->" , req.body)
   const {fullName , username, password , email, department,isAdmin , researchInterest ,designation}=req.body
   if ([fullName , username, password , email, department,isAdmin,researchInterest ,designation].some((item)=>{
     if (item) {
@@ -148,11 +151,17 @@ const login_user = asynchandler(async (req , res ,_)=>{
 
 })
 const googleAuthLogin = asynchandler(async (req,res)=>{
-  const {idToken} = req.body
-if (!idToken) throw new ApiError(400 , "google never sent token")
-  const payload =await  verifyGoogleToken(idToken)
-  if (!payload) throw new ApiError(400 , "google didnt verify")
-  const {email,name,pic} = payload
+  const {idToken_name , idToken_email} = req.body
+if (!idToken_email || !idToken_name) throw new ApiError(400 , "google never sent token")
+  const payload_email =await  verifyGoogleToken(idToken_email)
+  const payload_name = await verifyGoogleToken(idToken_name)
+  if (!payload_name) throw new ApiError(400 , "google didnt verify name")
+  if (!payload_email) throw new ApiError(400 , "google didnt verify_email")
+  const {email} = payload_email
+  const {name , picture} = payload_name
+
+  // if (!email.includes("@iiitnr.edu.in")) throw new ApiError(400, "enter the administered college email")
+  if (!email || !name) throw new ApiError(400 , "google didnt send email or name")
 
 
   /** @type {import("../models/user.model.js").User} */
@@ -163,15 +172,16 @@ if (!idToken) throw new ApiError(400 , "google never sent token")
     const created =await  User.create({
       fullName:name,
       email:email,
-      avatar:pic,
-      username:email.split("@")[0]
+      username:email.split("@")[0] + "101",
+      avatar:picture || "",
     })
-    if (!user) throw new ApiError(400 , "user not created")
+    if (!created) throw new ApiError(400 , "user not created")
     const option = {
       http:true,
       secure:true
     }
-    const {accessToken, refreshToken} = generateAccessRefershTokens(created._id)
+    const {accessToken,refreshToken} =await generateAccessRefershTokens(created._id)
+
     if (!accessToken || !refreshToken) throw new ApiError(400, "tokens not generated")
     return res
       .status(200)
@@ -188,7 +198,8 @@ if (!idToken) throw new ApiError(400 , "google never sent token")
     http:true,
     secure:true
   }
-  const {accessToken, refreshToken} = generateAccessRefershTokens(user._id)
+  const {accessToken,refreshToken} = await generateAccessRefershTokens(user._id)
+  // console.log("accessToken " , accessToken ,"refreshToken-->", refreshToken)
   if (!accessToken || !refreshToken) throw new ApiError(400, "tokens not generated")
   return res
     .status(200)
@@ -202,23 +213,35 @@ if (!idToken) throw new ApiError(400 , "google never sent token")
 })
 const completeProfile = asynchandler(async (req , res)=>{
   /** @type {import("../models/user.model.js").User} */
+
+  console.log("req.files-->" , req.files)
+
   const {department , isAdmin , researchInterest ,designation} = req.body
   if (!department || !department.trim()|| !isAdmin || !isAdmin.trim() || !researchInterest|| !researchInterest.trim()) throw new ApiError(400 , "add details")
-  const local_path = req?.file?.path
-  if (!local_path)throw new ApiError(400 , "multer ki maaa ka bhosda")
-  const onCloud = await upload(local_path)
-  if (!onCloud.url) throw new ApiError(400 , "coverImage not uploaded on cloudinary")
+  const local_path_avatar = req?.files?.avatar[0]?.path
+  if (!local_path_avatar)throw new ApiError(400 , "avatar not fetched from multer")
+  const local_path_coverimage = req?.files?.coverImage[0]?.path
+  if (!local_path_coverimage) throw new ApiError(400 , "coverImage not fetched from multer")
+  const onCloud_avatar = await upload(local_path_avatar)
+  const onCloud_coverImage = await upload(local_path_coverimage)
+  if (!onCloud_avatar.url) throw new ApiError(400 , "avatar not uploaded on cloudinary")
+
+  if (!onCloud_coverImage.url) throw new ApiError(400 , "coverImage not uploaded on cloudinary")
   const bool_isAdmin = (typeof isAdmin === "string")
     ? JSON.parse(isAdmin.toLowerCase())
     : Boolean(isAdmin);
+  const array =[]
+  researchInterest.split(",").forEach((item)=>{
+    if (item.trim()) array.push(item.trim())
+  })
+  if (array.length===0) throw new ApiError(400 , "add some research interest")
   const user = await User.findByIdAndUpdate(req.user._id, {
     $set:{
       department:department,
       isAdmin:bool_isAdmin,
-      updateCoverImage:onCloud?.url || "",
-      researchInterests:{
-        $push:researchInterest.trim().split(",").map((item)=>item.trim())
-      },
+      coverImage:onCloud_coverImage?.url || "",
+      avatar:onCloud_avatar?.url || "",
+      researchInterests:array,
       designation:designation
     }
   } ,{new:true})
