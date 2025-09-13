@@ -5,7 +5,7 @@ import {
   login_user,
   logout,
   refreshAccessTokens,
-  register_user, report, updateAvatar, updateCoverImage, updateUserProfile,
+  register_user, report, setPassword, updateAvatar, updateCoverImage, updateUserProfile,
 } from "../controllers/user.controller.js";
 import { upload_mul } from "../middlewares/multer.middleware.js";
 import { jwt_auth } from "../middlewares/auth.middleware.js";
@@ -26,15 +26,8 @@ userRoutes.route("/login").post(login_user)
 userRoutes.route("/logout").post(jwt_auth , logout)
 userRoutes.route("/report").post(jwt_auth,report)
 userRoutes.route("/googleLogin").post(googleAuthLogin)
-userRoutes.route("/completeProfile").post(jwt_auth,upload_mul.fields([{
-  name:"avatar",
-  maxCount:1
-
-},{
-  name:"coverImage",
-  maxCount: 1
-
-}]),completeProfile)
+userRoutes.route("/completeProfile").post(jwt_auth,upload_mul.single("coverImage"),completeProfile)
+userRoutes.route("/setPassword").post(jwt_auth , setPassword)
 //get
 userRoutes.route("/getUser").get(jwt_auth, getUser)
 //patch
@@ -46,5 +39,5 @@ userRoutes.route("/updateCoverImage").patch(upload_mul.single("coverImage"),jwt_
 //del
 userRoutes.route("/delete").delete(jwt_auth , deleteUser)
 
-//every controller tested except report , googleLogin ,completeProfile
+//every controller tested except report....
 export default userRoutes

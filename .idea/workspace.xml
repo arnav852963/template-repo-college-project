@@ -5,14 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4fdc6654-a58e-45c7-9dd3-716834baf607" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/jsLibraryMappings.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/errorsfaced.txt" beforeDir="false" afterPath="$PROJECT_DIR$/errorsfaced.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/app.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/controllers/paper.controller.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/controllers/paper.controller.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/controllers/user.controller.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/controllers/user.controller.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/models/paper.model.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/paper.model.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/models/portfolio.model.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/portfolio.model.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/models/user.model.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/user.model.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/routes/paper.route.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/routes/paper.route.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/routes/user.routes.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/routes/user.routes.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -145,7 +141,8 @@
       <workItem from="1757660483574" duration="135000" />
       <workItem from="1757660637780" duration="1532000" />
       <workItem from="1757678714739" duration="3212000" />
-      <workItem from="1757700006368" duration="6910000" />
+      <workItem from="1757700006368" duration="7209000" />
+      <workItem from="1757741394073" duration="3443000" />
     </task>
     <servers />
   </component>
@@ -165,7 +162,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/src/controllers/paper.controller.js</url>
-          <line>90</line>
+          <line>94</line>
           <option name="timeStamp" value="4" />
         </line-breakpoint>
       </breakpoints>

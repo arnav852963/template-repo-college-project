@@ -160,7 +160,7 @@ if (!idToken_email || !idToken_name) throw new ApiError(400 , "google never sent
   const {email} = payload_email
   const {name , picture} = payload_name
 
-  // if (!email.includes("@iiitnr.edu.in")) throw new ApiError(400, "enter the administered college email")
+  if (!email.includes("@iiitnr.edu.in")) throw new ApiError(400, "enter the administered college email")
   if (!email || !name) throw new ApiError(400 , "google didnt send email or name")
 
 
@@ -218,13 +218,13 @@ const completeProfile = asynchandler(async (req , res)=>{
 
   const {department , isAdmin , researchInterest ,designation} = req.body
   if (!department || !department.trim()|| !isAdmin || !isAdmin.trim() || !researchInterest|| !researchInterest.trim()) throw new ApiError(400 , "add details")
-  const local_path_avatar = req?.files?.avatar[0]?.path
-  if (!local_path_avatar)throw new ApiError(400 , "avatar not fetched from multer")
-  const local_path_coverimage = req?.files?.coverImage[0]?.path
+
+
+  const local_path_coverimage = req?.file?.path
   if (!local_path_coverimage) throw new ApiError(400 , "coverImage not fetched from multer")
-  const onCloud_avatar = await upload(local_path_avatar)
+
   const onCloud_coverImage = await upload(local_path_coverimage)
-  if (!onCloud_avatar.url) throw new ApiError(400 , "avatar not uploaded on cloudinary")
+
 
   if (!onCloud_coverImage.url) throw new ApiError(400 , "coverImage not uploaded on cloudinary")
   const bool_isAdmin = (typeof isAdmin === "string")
@@ -240,7 +240,6 @@ const completeProfile = asynchandler(async (req , res)=>{
       department:department,
       isAdmin:bool_isAdmin,
       coverImage:onCloud_coverImage?.url || "",
-      avatar:onCloud_avatar?.url || "",
       researchInterests:array,
       designation:designation
     }
@@ -251,6 +250,21 @@ const completeProfile = asynchandler(async (req , res)=>{
 
 
 })
+
+
+const  setPassword = asynchandler(async (req,res,next)=> {
+  const { new_password, confirm_password } = req.body
+  if (!new_password.trim() || !confirm_password.trim()) throw new ApiError(401, "np empty strings")
+  if (new_password !== confirm_password) throw new ApiError(400, "doest match with the confirm password")
+  const user = await User.findById(req?.user?._id)
+  if (!user) throw new ApiError(400, "user not fetched ")
+  user.password = new_password
+  await user.save({ validateBeforeSave: false })
+  return res.status(200)
+    .json(new ApiResponse(200, {}, "password set"))
+})
+
+
 const logout= asynchandler(async (req,res,_)=>{
 const user =await User.findByIdAndUpdate(req?.user?._id , {
   // $set:{
@@ -489,4 +503,4 @@ const report = asynchandler(async (req,res)=>{
 
 
 
-export {register_user , login_user , logout , getUser , changePassword , refreshAccessTokens,updateUserProfile,updateAvatar,updateCoverImage,deleteUser , report , googleAuthLogin , completeProfile}
+export {register_user , login_user , logout , getUser , changePassword , refreshAccessTokens,updateUserProfile,updateAvatar,updateCoverImage,deleteUser , report , googleAuthLogin , completeProfile , setPassword}

@@ -9,7 +9,11 @@ import mongoose, { isValidObjectId } from "mongoose";
 import { ObjectId } from "mongodb";
 import { auth } from "google-auth-library";
 const uploadPaperScholar = asynchandler(async (req,res)=>{
-  const {query} = req.body
+  const {query } = req.body
+
+  // addd ADVANCE QUERIES LATER
+
+
   if (!query.trim()) throw ApiError(400 , "enter some query")
   const response = await searchScholarAPI(query)
   if (!response || response.length ===0) throw new ApiError(400 , "scholar search not working")
@@ -380,6 +384,22 @@ const addTag = asynchandler(async (req , res)=> {
     .json(new ApiResponse(200, updated, "tag added"))
 })
 
+const downloadPaper = asynchandler(async (req , res)=>{
+  const {paperId} = req.params
+  if (!paperId.trim() || !isValidObjectId(paperId)) throw new ApiError(400 , "naah")
+  const paper = await Paper.findById(paperId)
+  if (!paper) throw new ApiError(400 , "paper not found")
+  if (paper.isManual){
+    if (!paper.manualUpload) throw new ApiError(400 , "no manual upload link")
+    return res.redirect(paper.manualUpload)
+  } else {
+    if (!paper.link) throw new ApiError(400 , "no scholar link")
+    return res.status(200).redirect(paper.link)
+
+  }
+
+})
+
 export {
   uploadPaperScholar,
   uploadPaperManual,
@@ -392,7 +412,8 @@ export {
   getScholarUploads,
   getPublishedPapers,
   getAboutToBePublishedPapers,
-  addTag
+  addTag,
+  downloadPaper
 };
 
 
@@ -403,6 +424,6 @@ export {
 
 
 // admin flags
-// portfolio page
+
 
 //add a video into the website of how to use it

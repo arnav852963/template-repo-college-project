@@ -13,7 +13,7 @@ import {
   getScholarUploads,
   getPublishedPapers,
   getAboutToBePublishedPapers,
-  addTag
+  addTag, downloadPaper,
 } from "../controllers/paper.controller.js";
 
 const paperRoute = Router();
@@ -36,5 +36,6 @@ paperRoute.route("/scholarUploads").get(getScholarUploads);
 paperRoute.route("/publishedPapers").get(getPublishedPapers);
 paperRoute.route("/aboutToBePublishedPapers").get(getAboutToBePublishedPapers);
 paperRoute.route("/addTag/:paperId").post(addTag);
+paperRoute.route("/download/:paperId").get(downloadPaper)
 
 export default paperRoute;
