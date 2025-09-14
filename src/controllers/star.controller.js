@@ -46,13 +46,24 @@ const getStaredPapers = asynchandler(async (req,res)=>{
       foreignField:"staredBy",
       pipeline:[{
         $lookup:{
-          from:"papers",
+          from:"paper",
           localField:"paper",
           foreignField:"_id",
-          as:"starPapers"
+          as:"starPapers",
+          pipeline:[{
+            $project:{
+              title:1,
+              authors:1,
+              link:1,
+              manualUpload:1,
+              tag:1,
+              publishedDate:1,
+              publishedBy:1,
+            }
+          }]
         }
 
-    }, {
+    } ,{
         $unwind: "$starPapers"
       }, {
         $replaceRoot:{newRoot:"$starPapers"}
@@ -65,7 +76,7 @@ const getStaredPapers = asynchandler(async (req,res)=>{
       allStarPapers:1
     }
   }])
-  if (getPapers.length ===0 || getPapers.allStarPapers.length === 0) throw new ApiError(400 , "cant get stared papers")
+  if (getPapers.length ===0 || getPapers[0].allStarPapers.length === 0) throw new ApiError(400 , "cant get stared papers")
   return res.status(200)
     .json(new ApiResponse(200 , getPapers , "here are your stared papers"))
 

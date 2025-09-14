@@ -32,7 +32,7 @@ authors:[{
     required:true
   },
   citedBy:{
-    type:Number,
+    type:Object,
 
   },
 

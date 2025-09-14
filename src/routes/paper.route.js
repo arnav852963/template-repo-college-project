@@ -20,7 +20,7 @@ const paperRoute = Router();
 paperRoute.use(jwt_auth);
 
 // Research paper routes
-paperRoute.route("/addResearchPaper").post(uploadPaperScholar);
+paperRoute.route("/addResearchPaper").post(uploadPaperScholar);//api kam kr raha hai
 paperRoute.route("/addResearchPaperManual").post(upload_mul.single("paper"), uploadPaperManual); //tested
 
 // Fetching routes
@@ -36,6 +36,6 @@ paperRoute.route("/scholarUploads").get(getScholarUploads);
 paperRoute.route("/publishedPapers").get(getPublishedPapers);
 paperRoute.route("/aboutToBePublishedPapers").get(getAboutToBePublishedPapers);
 paperRoute.route("/addTag/:paperId").post(addTag);
-paperRoute.route("/download/:paperId").get(downloadPaper)
+paperRoute.route("/download/:paperId").get(downloadPaper)//tested
 
 export default paperRoute;

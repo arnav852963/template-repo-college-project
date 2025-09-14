@@ -4,7 +4,8 @@ import { getStaredPapers, starPaper } from "../controllers/star.controller.js";
 const starRoutes = Router()
 starRoutes.use(jwt_auth)
 
-starRoutes.route("/toggleStar").post(starPaper)
+starRoutes.route("/toggleStar/:paperId").post(starPaper)
 starRoutes.route("/getAllStarPapers").get(getStaredPapers)
+//star routes saare checked
 
 export default starRoutes

@@ -24,12 +24,13 @@ userRoutes.route("/register").post(upload_mul.fields([{
 //post
 userRoutes.route("/login").post(login_user)
 userRoutes.route("/logout").post(jwt_auth , logout)
-userRoutes.route("/report").post(jwt_auth,report)
+
 userRoutes.route("/googleLogin").post(googleAuthLogin)
 userRoutes.route("/completeProfile").post(jwt_auth,upload_mul.single("coverImage"),completeProfile)
 userRoutes.route("/setPassword").post(jwt_auth , setPassword)
 //get
 userRoutes.route("/getUser").get(jwt_auth, getUser)
+userRoutes.route("/report").get(jwt_auth,report)
 //patch
 userRoutes.route("/changePassword").patch(jwt_auth ,changePassword)
 userRoutes.route("/refreshAccessToken").patch(jwt_auth , refreshAccessTokens)

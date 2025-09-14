@@ -9,23 +9,26 @@ import mongoose, { isValidObjectId } from "mongoose";
 import { ObjectId } from "mongodb";
 import { auth } from "google-auth-library";
 const uploadPaperScholar = asynchandler(async (req,res)=>{
-  const {query } = req.body
+  const {query , index} = req.body
 
   // addd ADVANCE QUERIES LATER
 
 
-  if (!query.trim()) throw ApiError(400 , "enter some query")
+  if (!query.trim() || !index.trim()) throw ApiError(400 , "enter some query")
+  if (isNaN(parseInt(index)) || parseInt(index)<0) throw new ApiError(400 , "index should be a valid number")
+  const i = parseInt(index)
   const response = await searchScholarAPI(query)
   if (!response || response.length ===0) throw new ApiError(400 , "scholar search not working")
+
   const addPaper = await Paper.create({
-    title:response[1].title,
-    authors:response[1].authors.split(",").map(a => a.trim()),
-    publishedBy:response[1].publishedBy,
-    link:response[1].link,
-    publishedDate:response[1].year,
+    title:response[i].title,
+    authors:response[i].publication_info.authors,
+    publishedBy:response[i].publication_info.summary,
+    link:response[i].link,
+    publishedDate:response[i].year,
     owner:req?.user?._id,
-    pdfUrl:response[1].pdf_url,
-    citedBy:response[1].cited_by,
+    pdfUrl:response[i].pdf_url,
+    citedBy:response[i].inline_links.cited_by,
 
 
 
@@ -38,7 +41,7 @@ const uploadPaperScholar = asynchandler(async (req,res)=>{
 })
 const uploadPaperManual = asynchandler(async (req , res)=>{
 
-
+console.log(req.body)
 
   const {title , author , publishedDate , publishedBy , tag} = req.body;
   if (!title || !author || !publishedDate || !publishedBy || !tag)  throw new ApiError(400 , "enter details properly")
@@ -122,7 +125,7 @@ const searchPaper = asynchandler(async (req,res)=>{
     }
   },{
     $lookup:{
-      from:"papers",
+      from:"paper",
       localField:"_id",
       foreignField:"owner",
       pipeline:[{
@@ -174,7 +177,7 @@ const getManualUploads = asynchandler(async (req , res)=>{
     }
   },{
     $lookup:{
-      from:"papers",
+      from:"paper",
       localField:"_id",
       foreignField:"owner",
       pipeline:[{

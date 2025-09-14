@@ -21,11 +21,11 @@ import paperRoute from "./routes/paper.route.js";
 app.use("/api/v1/papers" , paperRoute)
 
 import starRoutes from "./routes/star.routes.js";
-app.use("/star" , starRoutes)
+app.use("/api/v1/star" , starRoutes)
 
 import groupRoutes from "./routes/group.routes.js";
-app.use("/groups" , groupRoutes)
+app.use("/api/v1/group" , groupRoutes)
 import dashboardRoutes from "./routes/dashboard.routes.js";
-app.use("/dashboard" , dashboardRoutes)
+app.use("/api/v1/dashboard" , dashboardRoutes)
 
 export {app}

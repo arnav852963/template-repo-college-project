@@ -99,4 +99,5 @@ userModel.methods.generateRefreshToken = function(){
 userModel.methods.generateTempToken = function(){
 
 }
+
 export const User = mongoose.model("User" , userModel)
