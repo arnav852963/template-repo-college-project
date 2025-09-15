@@ -8,34 +8,22 @@ import { User } from "../models/user.model.js";
 import mongoose, { isValidObjectId } from "mongoose";
 import { ObjectId } from "mongodb";
 import { auth } from "google-auth-library";
-const uploadPaperScholar = asynchandler(async (req,res)=>{
-  const {query , index} = req.body
+const SearchPaperScholar = asynchandler(async (req,res)=>{
+  const {query} = req.body
 
   // addd ADVANCE QUERIES LATER
 
 
   if (!query.trim() || !index.trim()) throw ApiError(400 , "enter some query")
-  if (isNaN(parseInt(index)) || parseInt(index)<0) throw new ApiError(400 , "index should be a valid number")
-  const i = parseInt(index)
+
+
   const response = await searchScholarAPI(query)
   if (!response || response.length ===0) throw new ApiError(400 , "scholar search not working")
 
-  const addPaper = await Paper.create({
-    title:response[i].title,
-    authors:response[i].publication_info.authors,
-    publishedBy:response[i].publication_info.summary,
-    link:response[i].link,
-    publishedDate:response[i].year,
-    owner:req?.user?._id,
-    pdfUrl:response[i].pdf_url,
-    citedBy:response[i].inline_links.cited_by,
 
 
-
-  })
-  if (!addPaper) throw new ApiError(400 , "paper not added to the  database")
   res.status(200)
-    .json(new ApiResponse(200,addPaper,"here is your search"))
+    .json(new ApiResponse(200,response,"here is your search"))
 
 
 })
@@ -404,7 +392,7 @@ const downloadPaper = asynchandler(async (req , res)=>{
 })
 
 export {
-  uploadPaperScholar,
+  SearchPaperScholar,
   uploadPaperManual,
   getUserPapers,
   paperById,

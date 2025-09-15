@@ -1,0 +1,13 @@
+i want to build a frontend for my research paper management portal..
+it includes registering(manual),
+oauth login,
+manual login,
+then int the home page..
+it contains a google scholar search bar through which i can search research papers....
+every research paper in search result will have a toogle box withit..
+i will toggle all the research paspers that i want to save in my database....
+there should also be option of manual papers upload..
+then there should be a star option with every reseachPaper through wich i can star it and save the stared paper into mm databvase..
+then there should be a create group option which will group all the selected research paper into a single group..say like Ai papers.
+and hit many other api endpoints
+

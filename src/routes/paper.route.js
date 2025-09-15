@@ -13,14 +13,15 @@ import {
   getScholarUploads,
   getPublishedPapers,
   getAboutToBePublishedPapers,
-  addTag, downloadPaper,
+  addTag, downloadPaper, SearchPaperScholar,
 } from "../controllers/paper.controller.js";
 
 const paperRoute = Router();
 paperRoute.use(jwt_auth);
 
 // Research paper routes
-paperRoute.route("/addResearchPaper").post(uploadPaperScholar);//api kam kr raha hai
+paperRoute.route("/addResearchPaper").get(SearchPaperScholar);//tested
+// add a controller which willl take objects of schollar SEarch and save them to database
 paperRoute.route("/addResearchPaperManual").post(upload_mul.single("paper"), uploadPaperManual); //tested
 
 // Fetching routes

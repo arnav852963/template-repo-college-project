@@ -103,6 +103,42 @@ const  deleteGroup = asynchandler(async (req,res)=>{
       .json(new ApiResponse(200 , del , "deleted group"))
 
 })
+
+
+const getAllGroupPapers = asynchandler(async (req,res)=> {
+  const { groupId } = req.params
+  if (!groupId || !isValidObjectId(groupId)) throw new ApiError(400, "naah")
+  const allPapers = await Group.aggregate([{
+    $match: {
+      _id: new mongoose.Types.ObjectId(groupId)
+    }
+  },{
+    $lookup:{
+      from:"paper",
+      localField:"papers",
+      foreignField:"_id",
+      pipeline:[{
+        $project:{
+          title:1,
+          authors:1,
+          link:1,
+          manualUpload:1
+        }
+      }],
+      as:"papers"
+    }
+  },{
+    $project:{
+      papers:1
+    }
+  }])
+
+  if(allPapers.length===0 || allPapers[0].papers.length===0) throw new ApiError(400 , "no papers in this group")
+  return res.status(200)
+    .json(new ApiResponse(200 , allPapers[0].papers , "here are all the papers in this group"))
+})
+
+
 const getAllGroups = asynchandler(async (req,res)=>{
   const all = await Group.aggregate([{
     $match:{
@@ -124,4 +160,4 @@ const getAllGroups = asynchandler(async (req,res)=>{
   return res.status(200)
     .json(new ApiResponse(200 , all[0] , "here is your group collection"))
 })
-export {createGroup , getAllGroups , getGroupById , deleteGroup , addPaperToGroup , removePaper , updateGroup}
+export {createGroup , getAllGroups , getGroupById , deleteGroup , addPaperToGroup , removePaper , updateGroup , getAllGroupPapers}
