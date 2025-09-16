@@ -24,6 +24,75 @@ const createGroup = asynchandler(async (req,res)=>{
     .json(new ApiResponse(200 , group , "group created"))
 
 })
+
+const createGroupByTag = asynchandler(async (req,res)=>{
+  const {tag} = req.body
+
+  if(!tag.trim()) throw new ApiError(400 , "naah")
+  const exists = await Group.findOne({
+      $and: [
+        { name: tag },
+        { owner: req.user._id }
+      ]
+    }
+  )
+
+
+  if (exists) throw new ApiError(400 , "group with this tag already exists")
+
+
+  const newGroup = await Group.create({
+    name:tag,
+    description:`group of all papers with tag ${tag}`,
+    owner:req.user._id
+  })
+
+  if (!newGroup) throw new ApiError(400 , "group not created")
+  const papersWithTag = await User.aggregate([{
+    $match:{
+      _id:new mongoose.Types.ObjectId(req.user._id)
+    }
+
+
+  },{
+    $lookup: {
+      from: "paper",
+      localField: "_id",
+      foreignField: "owner",
+      pipeline:[{
+        $match:{
+          tag: { $elemMatch: { $regex: `^${tag}$`, $options: "i" } }
+        }
+      },{
+        $project:{
+          title:1,
+          authors:1,
+          link:1,
+          manualUpload:1,
+          tag:1,
+          citedBy:1,
+          isPublished:1,
+        }
+      }],
+      as: "papers"
+
+    }
+
+
+  },{
+    $project:{
+      papers:1
+    }
+  }])
+  if(papersWithTag.length ===0 || papersWithTag[0].papers.length === 0) throw new ApiError(400 , "no papers with this tag")
+  newGroup.papers = papersWithTag[0].papers
+  await newGroup.save()
+  return res.status(200)
+    .json(new ApiResponse(200 , newGroup , "group created of papers with tag" + tag))
+
+
+})
+
 const addPaperToGroup = asynchandler(async (req ,res)=>{
   const {paperId , groupId} = req.params
   if (!paperId || !isValidObjectId(paperId) || !groupId || !isValidObjectId(groupId)) throw new ApiError(400 , "naah")
@@ -160,4 +229,4 @@ const getAllGroups = asynchandler(async (req,res)=>{
   return res.status(200)
     .json(new ApiResponse(200 , all[0] , "here is your group collection"))
 })
-export {createGroup , getAllGroups , getGroupById , deleteGroup , addPaperToGroup , removePaper , updateGroup , getAllGroupPapers}
+export {createGroup , getAllGroups , getGroupById , deleteGroup , addPaperToGroup , removePaper , updateGroup , getAllGroupPapers , createGroupByTag}
