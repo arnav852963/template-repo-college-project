@@ -2,9 +2,11 @@ import { Router } from "express";
 import { jwt_auth } from "../middlewares/auth.middleware.js";
 import { upload_mul } from "../middlewares/multer.middleware.js";
 import {
-  uploadPaperScholar,
+
   uploadPaperManual,
-  getUserPapers,
+  getUserConferencePapers,
+  getUserJournals,
+  getUserBookChapter,
   paperById,
   deletePaper,
   searchPaper,
@@ -20,15 +22,17 @@ const paperRoute = Router();
 paperRoute.use(jwt_auth);
 
 // Research paper routes
-paperRoute.route("/addResearchPaper").get(SearchPaperScholar);//tested
+paperRoute.route("/getResearchPaper").get(SearchPaperScholar);//tested
 // add a controller which willl take objects of schollar SEarch and save them to database
 paperRoute.route("/addResearchPaperManual").post(upload_mul.single("paper"), uploadPaperManual); //tested
 
 // Fetching routes
-paperRoute.route("/getUserPapers").get(getUserPapers); //tested
+paperRoute.route("/getUserConferencePapers").get(getUserConferencePapers); //tested
 paperRoute.route("/paperById/:paperId").get(paperById); //tested
 paperRoute.route("/deletePaper/:paperId").delete(deletePaper);
 paperRoute.route("/searchPaper").get(searchPaper);
+paperRoute.route("/getJournals").get(getUserJournals)
+paperRoute.route("/getBookChapter").get(getUserBookChapter)
 
 // functionality routes
 paperRoute.route("/filterSearch").post(filter_search);

@@ -27,12 +27,37 @@ const SearchPaperScholar = asynchandler(async (req,res)=>{
 
 
 })
+
+const saveThesePapers = asynchandler(async (req , res)=>{
+  const {arr} = req.body
+  if (!arr || arr.length ===0) throw new ApiError(400 , "enter some array")
+  const response=[]
+
+  for (let i=0;i<arr.length;i++){
+    const paper = await Paper.create({
+      title: arr[i].title,
+      authors: arr[i].authors.split(",").map(a => a.trim()),
+      publishedBy: arr[i].publishedBy,
+      link: arr[i].link,
+      publishedDate: arr[i].year,
+      owner: req?.user?._id,
+      // pdfUrl: arr[i].pdf_url,
+      citedBy: arr[i].inline_links.cited_by,
+    })
+    if(!paper) throw new ApiError(400 , "cant create paper")
+    response.push(paper)
+  }
+  return res.status(200)
+    .json(new ApiResponse(200,response,"papers saved successfully"))
+
+
+})
 const uploadPaperManual = asynchandler(async (req , res)=>{
 
 console.log(req.body)
 
-  const {title , author , publishedDate , publishedBy , tag} = req.body;
-  if (!title || !author || !publishedDate || !publishedBy || !tag)  throw new ApiError(400 , "enter details properly")
+  const {title , author , publishedDate , publishedBy , tag,classifiedAs} = req.body;
+  if (!title || !author || !publishedDate || !publishedBy || !tag||!classifiedAs)  throw new ApiError(400 , "enter details properly")
 
   const local_pdf = req.file.path;
   if (!local_pdf) throw new ApiError(400 , "multer messed")
@@ -58,7 +83,8 @@ console.log(req.body)
     publishedBy:publishedBy,
     isManual:true,
     tag:tags,
-    isPublished:false
+    isPublished:false,
+    classifiedAs:classifiedAs.toLowerCase().trim()
 
   })
 if (!paper) throw new ApiError(400 , "cant create paper")
@@ -66,9 +92,31 @@ if (!paper) throw new ApiError(400 , "cant create paper")
     .json(new ApiResponse(200,paper,"paper uploaded manually"))
 })
 
-const getUserPapers = asynchandler(async (req,res)=>{
+const getUserConferencePapers = asynchandler(async (req,res)=>{
 
-  const papers = await Paper.find({owner:req?.user?._id})
+  const papers = await Paper.find({owner:req?.user?._id,classifiedAs:"conference"})
+  if (!papers || papers.length ===0) throw new ApiError(400 , "cant get papers")
+
+
+  return res.status(200)
+    .json(new ApiResponse(200,papers,"here is your collection"))
+
+})
+
+const getUserJournals = asynchandler(async (req,res)=>{
+
+  const papers = await Paper.find({owner:req?.user?._id,classifiedAs:"journal"})
+  if (!papers || papers.length ===0) throw new ApiError(400 , "cant get papers")
+
+
+  return res.status(200)
+    .json(new ApiResponse(200,papers,"here is your collection"))
+
+})
+
+const getUserBookChapter = asynchandler(async (req,res)=>{
+
+  const papers = await Paper.find({owner:req?.user?._id,classifiedAs:"book chapter"})
   if (!papers || papers.length ===0) throw new ApiError(400 , "cant get papers")
 
 
@@ -361,14 +409,17 @@ const getAboutToBePublishedPapers  = asynchandler(async (req , res) =>{
 
 const addTag = asynchandler(async (req , res)=> {
   const { paperId } = req.params
-  const { tag } = req.body
+  const { tags } = req.body
   if (!paperId.trim() || !isValidObjectId(paperId)) throw new ApiError(400, "naah")
-  if (!tag.trim()) throw new ApiError(400, "enter some tag")
+  if (!tags.length===0) throw new ApiError(400, "enter some tag")
   const paper = await Paper.findById(paperId)
   if (!paper) throw new ApiError(400, "paper not found")
   if (paper.owner.toString() !== req.user._id.toString()) throw new ApiError(403, "not your paper")
-  if (paper.tag.includes(tag.trim())) throw new ApiError(400, "tag already exists")
-  paper.tag.push(tag.trim())
+
+  tags.split(",").forEach(tag=>{
+    if (tag.trim()!=="" && !paper.tag.includes(tag.trim().toLowerCase())) paper.tag.push(tag.trim())
+  })
+
   const updated = await paper.save()
   if (!updated) throw new ApiError(400, "tag not added")
   return res.status(200)
@@ -394,7 +445,7 @@ const downloadPaper = asynchandler(async (req , res)=>{
 export {
   SearchPaperScholar,
   uploadPaperManual,
-  getUserPapers,
+  getUserConferencePapers,
   paperById,
   deletePaper,
   searchPaper,
@@ -404,7 +455,9 @@ export {
   getPublishedPapers,
   getAboutToBePublishedPapers,
   addTag,
-  downloadPaper
+  downloadPaper,
+  getUserJournals,
+  getUserBookChapter
 };
 
 

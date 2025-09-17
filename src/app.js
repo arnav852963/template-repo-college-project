@@ -28,4 +28,8 @@ app.use("/api/v1/group" , groupRoutes)
 import dashboardRoutes from "./routes/dashboard.routes.js";
 app.use("/api/v1/dashboard" , dashboardRoutes)
 
+import patentRoutes from "./routes/patent.routes.js";
+app.use("/api/v1/patents" , patentRoutes)
+import projectRoute from "./routes/project.route.js";
+app.use("/api/v1/projects" , projectRoute)
 export {app}

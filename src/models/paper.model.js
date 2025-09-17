@@ -21,7 +21,9 @@ authors:[{
 
   },
   tag:[{
-    type:String
+    type:String,
+    toLowerCase:true
+
   }],
   publishedDate:{
     type:String,
@@ -50,6 +52,11 @@ authors:[{
     type:Boolean,
     required:true,
     default:false
+  },
+  classifiedAs:{
+    type:String,
+    enum:["journal","conference","book chapter"],
+    default:"conference"
   }
 
 },{timestamps:true})
