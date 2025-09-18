@@ -29,6 +29,10 @@ authors:[{
     type:String,
     required:true
   },
+  // publishedDate:{
+  //   type:Date,
+  //   required:true
+  // },
   publishedBy:{
     type:String,
     required:true
