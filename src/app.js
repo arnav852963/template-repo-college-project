@@ -25,11 +25,16 @@ app.use("/api/v1/star" , starRoutes)
 
 import groupRoutes from "./routes/group.routes.js";
 app.use("/api/v1/group" , groupRoutes)
+
 import dashboardRoutes from "./routes/dashboard.routes.js";
 app.use("/api/v1/dashboard" , dashboardRoutes)
 
 import patentRoutes from "./routes/patent.routes.js";
 app.use("/api/v1/patents" , patentRoutes)
+
 import projectRoute from "./routes/project.route.js";
 app.use("/api/v1/projects" , projectRoute)
+
+import adminRoute from "./routes/admin.routes.js";
+app.use("/api/v1/admin" , adminRoute)
 export {app}

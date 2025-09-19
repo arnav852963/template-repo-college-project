@@ -34,7 +34,7 @@ authors:[{
   //   required:true
   // },
   publishedBy:{
-    type:String,
+    type:Date,
     required:true
   },
   citedBy:{

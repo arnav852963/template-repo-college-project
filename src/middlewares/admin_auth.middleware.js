@@ -18,3 +18,4 @@ const admin_auth = async (req, res, next) => {
   }
 
 }
+export { admin_auth }

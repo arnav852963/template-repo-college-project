@@ -39,7 +39,7 @@ const saveThesePapers = asynchandler(async (req , res)=>{
       authors: arr[i].authors.split(",").map(a => a.trim()),
       publishedBy: arr[i].publishedBy,
       link: arr[i].link,
-      publishedDate: arr[i].year,
+      publishedDate: arr[i].year,// change to Date type
       owner: req?.user?._id,
       // pdfUrl: arr[i].pdf_url,
       citedBy: arr[i].inline_links.cited_by,
@@ -78,7 +78,7 @@ console.log(req.body)
     title:title,
     authors:authors,
     manualUpload:upload_pdf.url || "",
-    publishedDate:publishedDate,
+    publishedDate:new Date(publishedDate),
     owner:req?.user?._id,
     publishedBy:publishedBy,
     isManual:true,
