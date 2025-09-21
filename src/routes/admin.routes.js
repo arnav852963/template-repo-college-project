@@ -12,13 +12,9 @@ const adminRoute = Router();
 
 
 adminRoute.use(jwt_auth,admin_auth );
-
 adminRoute.route("/dashboard").get(adminDashboard);
-
 adminRoute.route("/year/:year").get(yearWiseDetails);
-
 adminRoute.route("/yearRange/:from/:to").get(yearRangeDetails);
-
 adminRoute.route("/user/:userId").get(userDetails);
 
 export default adminRoute;

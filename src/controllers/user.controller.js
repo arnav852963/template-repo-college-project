@@ -125,7 +125,7 @@ const login_user = asynchandler(async (req , res ,_)=>{
   user.password = ""
 
   if (user.isAdmin) {
-    res
+    return res
       .status(200)
       .cookie("accessToken", accessToken, options)
       .cookie("refreshToken", refreshToken, options)
@@ -143,7 +143,7 @@ const login_user = asynchandler(async (req , res ,_)=>{
       user: user,
       accessToken: accessToken,
       refreshToken: refreshToken
-    }, "logged in as admin"))
+    }, "logged in successfully"))
 
 
 
@@ -187,7 +187,11 @@ if (!idToken_email || !idToken_name) throw new ApiError(400 , "google never sent
       .status(200)
       .cookie("accessToken" , accessToken , option)
       .cookie("refreshToken" , refreshToken,option)
-      .json(new ApiResponse(200,created , "logged in "))
+      .json(new ApiResponse(200, {
+        user: created,
+        accessToken: accessToken,
+        refreshToken: refreshToken
+      }, "logged in successfully"))
 
 
 
@@ -205,7 +209,11 @@ if (!idToken_email || !idToken_name) throw new ApiError(400 , "google never sent
     .status(200)
     .cookie("accessToken" , accessToken , options)
     .cookie("refreshToken" , refreshToken,options)
-    .json(new ApiResponse(200,user , "logged in "))
+    .json(new ApiResponse(200, {
+      user: user,
+      accessToken: accessToken,
+      refreshToken: refreshToken
+    }, "logged in successfully"))
 
 
 

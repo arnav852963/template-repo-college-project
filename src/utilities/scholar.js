@@ -5,16 +5,19 @@ dotenv.config({
   path:"./.env"
 })
 
-export const searchScholarAPI = async (query) => {
-  if (!query) throw new ApiError(400, "Search query required");
+export const searchScholarAPI = async (query,fromYear=-1,tillYear=-1) => {
+
 
   try {
+    const obj ={
+      engine: "google_scholar",
+      api_key: process.env.SERP_API_KEY
+    }
+    if(query) obj.q = query
+    if(fromYear !== -1) obj.as_ylo = fromYear
+    if(tillYear !== -1) obj.as_yhi = tillYear
     const response = await axios.get("https://serpapi.com/search", {
-      params: {
-        engine: "google_scholar",
-        q: query,
-        api_key: process.env.SERP_API_KEY
-      }
+      params: obj
 
     });
 

@@ -9,15 +9,15 @@ import mongoose, { isValidObjectId } from "mongoose";
 import { ObjectId } from "mongodb";
 import { auth } from "google-auth-library";
 const SearchPaperScholar = asynchandler(async (req,res)=>{
-  const {query} = req.body
+  let   {query,fromYear,tillYear,sortByDate} = req.body
 
-  // addd ADVANCE QUERIES LATER
+  if(!query  && !fromYear &&  !tillYear) throw ApiError(400 , "enter some query")
+
+  if(fromYear && typeof fromYear !=="number") fromYear = parseInt(fromYear.trim())
+  if(tillYear && tillYear !=="number") tillYear = parseInt(tillYear.trim())
 
 
-  if (!query.trim() || !index.trim()) throw ApiError(400 , "enter some query")
-
-
-  const response = await searchScholarAPI(query)
+  const response = await searchScholarAPI(query , fromYear,tillYear)
   if (!response || response.length ===0) throw new ApiError(400 , "scholar search not working")
 
 
