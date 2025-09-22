@@ -9,6 +9,7 @@ export const registerUser = createAsyncThunk(
   async (userData: SignupData, { rejectWithValue }) => {
     try {
       const response = await authService.register(userData);
+      console.log("response-->",response)
       toast.success('Registration successful! Please login.');
       return response.data;
     } catch (error: any) {

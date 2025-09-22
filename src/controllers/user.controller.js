@@ -34,7 +34,7 @@ const generateAccessRefershTokens = async function(_id){
 }
 
 const register_user = asynchandler(async (req , res , _)=>{
-  console.log("req.body-->" , req.body)
+  
   const {fullName , username, password , email, department,isAdmin , researchInterest ,designation}=req.body
   if ([fullName , username, password , email, department,isAdmin,researchInterest ,designation].some((item)=>{
     if (item) {
@@ -61,6 +61,8 @@ const register_user = asynchandler(async (req , res , _)=>{
   if ( !upload_avatar.url) throw new ApiError(401 , "avatar cloudinary error")
   const upload_coverImage =await  upload(local_path_coverImage)
   if ( !upload_coverImage.url) throw new ApiError(401 , "coverImage cloudinary error")
+    console.log("avatar-->",upload_avatar.url)
+    console.log("coverImage-->",upload_coverImage.url)
   const array =[]
   researchInterest.split(",").forEach((item)=>{
     if (item.trim()) array.push(item.trim())
@@ -80,6 +82,8 @@ const register_user = asynchandler(async (req , res , _)=>{
     designation:designation
   })
   const response = await User.findById(user._id).select("-password -refreshToken")
+
+  console.log("response-->",response)
 if (bool_isAdmin) {
   return res
     .status(200)
